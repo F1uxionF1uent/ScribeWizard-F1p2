@@ -116,6 +116,10 @@ Improvements through PRs are welcome!
 
 ## Changelog
 
+### v0.1.2 - Updated NoteSection Class Explanation
+
+- Enhanced the explanation of the `NoteSection` class in `README-F1^2Edition.MD` to provide a more detailed and comprehensive understanding of its purpose, methods, and attributes. This update clarifies the role of `NoteSection` in structuring and displaying notes within the ScribeWizard application.
+
 ### v0.1.1 - Code Tour Feature
 
 - Added a detailed code tour to the `README-F1^2Edition.MD` file, providing an in-depth explanation of the project structure, key components, and technologies used. This feature helps developers understand the codebase and identify areas for modification and enhancement.
