@@ -78,7 +78,7 @@ class NoteSection:
         self.contents = {title: "" for title in self.flatten_structure(structure)}
         self.placeholders = {title: st.empty() for title in self.flatten_structure(structure)}
 
-        st.markdown("## Raw transcript:")
+        st.markdown("## متن خام:")
         st.markdown(transcript)
         st.markdown("---")
 
@@ -172,7 +172,7 @@ def transcribe_audio(audio_file):
       model="whisper-large-v3",
       prompt="",
       response_format="json",
-      language="en",
+    #   language="en",
       temperature=0.0 
     )
 
@@ -185,24 +185,23 @@ def generate_notes_structure(transcript: str, model: str = "llama3-70b-8192"):
     """
 
     shot_example = """
-"Introduction": "Introduction to the AMA session, including the topic of Groq scaling architecture and the panelists",
-"Panelist Introductions": "Brief introductions from Igor, Andrew, and Omar, covering their backgrounds and roles at Groq",
-"Groq Scaling Architecture Overview": "High-level overview of Groq's scaling architecture, covering hardware, software, and cloud components",
-"Hardware Perspective": "Igor's overview of Groq's hardware approach, using an analogy of city traffic management to explain the traditional compute approach and Groq's innovative approach",
-"Traditional Compute": "Description of traditional compute approach, including asynchronous nature, queues, and poor utilization of infrastructure",
-"Groq's Approach": "Description of Groq's approach, including pre-orchestrated movement of data, low latency, high energy efficiency, and high utilization of resources",
-"Hardware Implementation": "Igor's explanation of the hardware implementation, including a comparison of GPU and LPU architectures"
-}"""
+"مقدمه": "مقدمه ای بر جلسه AMA، از جمله موضوع معماری مقیاس پذیری Groq و اعضای پانل"،
+"Panelist Introductions": "معرفی مختصر از ایگور، اندرو، و عمر، که سوابق و نقش های آنها در Groq را پوشش می دهد".
+«نمای کلی معماری مقیاس‌پذیری Groq»: «نمای اجمالی سطح بالا از معماری مقیاس‌پذیری Groq، پوشش سخت‌افزار، نرم‌افزار و اجزای ابری»،
+"دیدگاه سخت افزار": "نگاه اجمالی ایگور از رویکرد سخت افزاری Groq، با استفاده از قیاسی از مدیریت ترافیک شهری برای توضیح رویکرد محاسباتی سنتی و رویکرد نوآورانه Groq"
+"محاسبات سنتی": "توضیح رویکرد محاسباتی سنتی، از جمله ماهیت ناهمزمان، صف‌ها و استفاده ضعیف از زیرساخت،"
+"رویکرد گروک": "توضیح رویکرد Groq، شامل حرکت از پیش سازماندهی شده داده ها، تأخیر کم، بازده انرژی بالا و استفاده زیاد از منابع"
+"پیاده سازی سخت افزار": "توضیح ایگور در مورد پیاده سازی سخت افزار، شامل مقایسه معماری GPU و LPU"}"""
     completion = st.session_state.groq.chat.completions.create(
         model=model,
         messages=[
             {
                 "role": "system",
-                "content": "Write in JSON format:\n\n{\"Title of section goes here\":\"Description of section goes here\",\"Title of section goes here\":\"Description of section goes here\",\"Title of section goes here\":\"Description of section goes here\"}"
+                "content": "Write in Farsi. JSON format:\n\n{\"Title of section goes here\":\"Description of section goes here\",\"Title of section goes here\":\"Description of section goes here\",\"Title of section goes here\":\"Description of section goes here\"}"
             },
             {
                 "role": "user",
-                "content": f"### Transcript {transcript}\n\n### Example\n\n{shot_example}### Instructions\n\nCreate a structure for comprehensive notes on the above transcribed audio. Section titles and content descriptions must be comprehensive. Quality over quantity."
+                "content": f"Write in Farsi. ### Transcript {transcript}\n\n### Example\n\n{shot_example}### Instructions\n\nCreate a structure for comprehensive notes on the above transcribed audio. Section titles and content descriptions must be comprehensive. Quality over quantity."
             }
         ],
         temperature=0.3,
@@ -224,11 +223,11 @@ def generate_section(transcript: str, existing_notes: str, section: str, model: 
         messages=[
             {
                 "role": "system",
-                "content": "You are an expert writer. Generate a comprehensive note for the section provided based factually on the transcript provided. Do *not* repeat any content from previous sections."
+                "content": "Write in Farsi. You are an expert writer. Generate a comprehensive note for the section provided based factually on the transcript provided. Do *not* repeat any content from previous sections."
             },
             {
                 "role": "user",
-                "content": f"### Transcript\n\n{transcript}\n\n### Existing Notes\n\n{existing_notes}\n\n### Instructions\n\nGenerate comprehensive notes for this section only based on the transcript: \n\n{section}"
+                "content": f"Write in Farsi. ### Transcript\n\n{transcript}\n\n### Existing Notes\n\n{existing_notes}\n\n### Instructions\n\nGenerate comprehensive notes for this section only based on the transcript: \n\n{section}"
             }
         ],
         temperature=0.3,
@@ -359,7 +358,7 @@ try:
     groq_input_key = None
     with st.form("groqform"):
         if not GROQ_API_KEY:
-            groq_input_key = st.text_input("Enter your Groq API Key (gsk_yA...):", "", type="password")
+            groq_input_key = st.text_input("Enter your Groq API Key (gsk_yA...):", "", type="password", autocomplete=None)
         
         # Add radio button to choose between file upload and YouTube link
         
@@ -428,8 +427,9 @@ try:
                         raise ValueError(FILE_TOO_LARGE_MESSAGE)
 
                     audio_file.name = os.path.basename(audio_file_path)  # Set the file name
-                    delete_download(audio_file_path)
+                    # delete_download(audio_file_path)
                 clear_download_status()
+                audio_file_path = None # Add this line to set audio_file_path to None after deletion
 
             if not GROQ_API_KEY:
                 st.session_state.groq = Groq(api_key=groq_input_key)
@@ -494,5 +494,5 @@ except Exception as e:
         st.rerun()
     
     # Remove audio after exception to prevent data storage leak
-    if audio_file_path is not None:
-        delete_download(audio_file_path)
+    # if audio_file_path is not None:
+    #     delete_download(audio_file_path)
